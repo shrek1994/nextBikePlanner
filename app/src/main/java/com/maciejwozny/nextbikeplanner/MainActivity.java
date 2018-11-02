@@ -1,5 +1,6 @@
 package com.maciejwozny.nextbikeplanner;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -31,6 +32,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private List<IStation> stationList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         StationDownloader stationDownloader = new StationDownloader(new DataDownloader());
-        List<IStation> stationList = stationDownloader.downloadStations();
+        stationList = stationDownloader.downloadStations();
         List<String> stationStrings = new ArrayList<>();
 
         for(IStation station : stationList) {
@@ -91,10 +93,16 @@ public class MainActivity extends AppCompatActivity {
                 pathString += edge.getDestination().getName() + " -> " + edge.getSource().getName()
                         + " = " + edge.getTime() + " meters\n";
             }
+            Log.d(TAG, pathString);
             TextView text = MainActivity.this.findViewById(R.id.outputText);
             text.setText(pathString);
         });
 
+
+        Button map = findViewById(R.id.mapButton);
+        map.setOnClickListener(view -> {
+            startActivity(new Intent(this, MapActivity.class));
+        });
     }
 
     @Override
