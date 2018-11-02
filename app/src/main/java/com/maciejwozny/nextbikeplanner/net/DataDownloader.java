@@ -1,45 +1,45 @@
 package com.maciejwozny.nextbikeplanner.net;
 
-import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 
-import com.maciejwozny.nextbikeplanner.R;
-
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 
-public class DataDownloader {
-    private static final String URL = "https://api.nextbike.net/maps/nextbike-live.json?city=148";
+public class DataDownloader extends AsyncTask<Void, Void, String> {
+    private static final String mURL = "https://api.nextbike.net/maps/nextbike-live.json?city=148";
     private static final String TAG = "DataDownloader";
-    private Context context;
 
-    public DataDownloader(Context context) {
-        this.context = context;
-    }
-
-    public String downloadFile() {
-        //TODO implement
+    private String downloadFile(String urlTxt) {
         try {
-            Log.d(TAG, context.getAssets().getLocales()[0]);
-            InputStream stream = context.getResources().openRawResource(R.raw.nextbike_wroclaw);
-            byte[] buffer = new byte[stream.available()];
-            //read the text file as a stream, into the buffer
-            stream.read(buffer);
-            //create a output stream to write the buffer into
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            //write this buffer to the output stream
-            outputStream.write(buffer);
-            //Close the Input and Output streams
-            outputStream.close();
-            stream.close();
+            URL url = new URL(urlTxt);
+            URLConnection connection = url.openConnection();
+            connection.connect();
+            InputStream stream = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
-            //return the output stream as a String
-            Log.d(TAG, "'" + outputStream.toString() + "'");
-            return outputStream.toString();
+            StringBuffer buffer = new StringBuffer();
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line+"\n");
+            }
+
+            Log.d(TAG, "Downloaded! " + buffer.substring(0, 100) + "...");
+            return buffer.toString();
         } catch (IOException e) {
+            Log.d(TAG, "IOError: '" + e.toString() + "'");
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    protected String doInBackground(Void... voids) {
+        return downloadFile(mURL);
     }
 }

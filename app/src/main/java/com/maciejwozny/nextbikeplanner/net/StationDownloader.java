@@ -1,13 +1,17 @@
 package com.maciejwozny.nextbikeplanner.net;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class StationDownloader implements IStationDownloader {
+    private final static String TAG = "StationDownloader";
     private DataDownloader dataDownloader;
 
     public StationDownloader(DataDownloader dataDownloader) {
@@ -16,7 +20,15 @@ public class StationDownloader implements IStationDownloader {
 
     @Override
     public List<IStation> downloadStations() {
-        String jsonText = dataDownloader.downloadFile();
+        String jsonText = null;
+        try {
+            jsonText = dataDownloader.execute().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, jsonText);
         List<IStation> stationList = new ArrayList<>();
         try {
 

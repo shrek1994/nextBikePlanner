@@ -36,16 +36,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        StationDownloader stationDownloader = new StationDownloader(new DataDownloader(this));
+        StationDownloader stationDownloader = new StationDownloader(new DataDownloader());
         List<IStation> stationList = stationDownloader.downloadStations();
         List<String> stationStrings = new ArrayList<>();
 
         for(IStation station : stationList) {
             stationStrings.add(station.getName());
-            Log.d(TAG, "'" + station.getName() + "'");
+//            Log.d(TAG, "'" + station.getName() + "'");
         }
 
         AutoCompleteTextView start = findViewById(R.id.autoCompleteStart);
@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
             Graph<IStationVertex, IStationEdge> graph = new GraphBuilder().build(stationList);
 
             Log.d(TAG, graph.toString());
+            Log.d(TAG, "number of vertex: " + graph.vertexSet().size());
+            Log.d(TAG, "number of edges: " + graph.edgeSet().size());
             IStationVertex destination = null, source = null;
             for (IStationVertex vertex : graph.vertexSet()) {
                 if (start.getText().toString().equals(vertex.getName())) {
