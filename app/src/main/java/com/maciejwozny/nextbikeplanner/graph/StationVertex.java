@@ -3,6 +3,7 @@ package com.maciejwozny.nextbikeplanner.graph;
 import android.location.Location;
 
 import com.maciejwozny.nextbikeplanner.net.IStation;
+import com.maciejwozny.nextbikeplanner.net.Station;
 
 class StationVertex implements IStationVertex {
     private String name;
@@ -10,7 +11,7 @@ class StationVertex implements IStationVertex {
     private double latitude;
     private Location location;
 
-    public StationVertex(IStation station) {
+    public StationVertex(Station station) {
         this.name = station.getName();
         this.longitude = station.getLongitude();
         this.latitude = station.getLatitude();

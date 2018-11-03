@@ -2,8 +2,6 @@ package com.maciejwozny.nextbikeplanner;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,7 +18,7 @@ import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
 import com.maciejwozny.nextbikeplanner.graph.IStationEdge;
 import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
 import com.maciejwozny.nextbikeplanner.net.DataDownloader;
-import com.maciejwozny.nextbikeplanner.net.IStation;
+import com.maciejwozny.nextbikeplanner.net.Station;
 import com.maciejwozny.nextbikeplanner.net.StationDownloader;
 
 import org.jgrapht.Graph;
@@ -32,7 +30,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private List<IStation> stationList = null;
+    public static final String EXTRA_STATION_LIST = "EXTRA_STATION_LIST";
+    private ArrayList<Station> stationList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +41,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         StationDownloader stationDownloader = new StationDownloader(new DataDownloader());
-        stationList = stationDownloader.downloadStations();
+        stationList = (ArrayList<Station>) stationDownloader.downloadStations();
+        if (stationList == null) {
+            Toast.makeText(this, "No internet connection !", Toast.LENGTH_LONG).show();
+            return;
+        }
         List<String> stationStrings = new ArrayList<>();
 
-        for(IStation station : stationList) {
+        for(Station station : stationList) {
             stationStrings.add(station.getName());
 //            Log.d(TAG, "'" + station.getName() + "'");
         }
@@ -58,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         end.setAdapter(adapter);
 
         Button calculate = findViewById(R.id.calculateButton);
-        calculate.setOnClickListener(view -> {
+        calculate.setOnClickListener((View view) -> {
             Graph<IStationVertex, IStationEdge> graph = new GraphBuilder().build(stationList);
 
             Log.d(TAG, graph.toString());
@@ -101,7 +104,9 @@ public class MainActivity extends AppCompatActivity {
 
         Button map = findViewById(R.id.mapButton);
         map.setOnClickListener(view -> {
-            startActivity(new Intent(this, MapActivity.class));
+            Intent intent = new Intent(this, MapActivity.class);
+            intent.putExtra(EXTRA_STATION_LIST, stationList);
+            startActivity(intent);
         });
     }
 

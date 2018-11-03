@@ -19,7 +19,8 @@ public class StationDownloader implements IStationDownloader {
     }
 
     @Override
-    public List<IStation> downloadStations() {
+    public List<Station> downloadStations() {
+        List<Station> stationList = new ArrayList<>();
         String jsonText = null;
         try {
             jsonText = dataDownloader.execute().get();
@@ -28,8 +29,12 @@ public class StationDownloader implements IStationDownloader {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+        if (jsonText == null) {
+            Log.e(TAG, "No internet connection!");
+            return null;
+        }
+
         Log.d(TAG, jsonText);
-        List<IStation> stationList = new ArrayList<>();
         try {
 
             JSONObject json = new JSONObject(jsonText);

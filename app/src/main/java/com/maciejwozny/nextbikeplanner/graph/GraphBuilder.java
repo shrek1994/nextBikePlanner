@@ -2,7 +2,7 @@ package com.maciejwozny.nextbikeplanner.graph;
 
 import android.util.Log;
 
-import com.maciejwozny.nextbikeplanner.net.IStation;
+import com.maciejwozny.nextbikeplanner.net.Station;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -13,9 +13,9 @@ import java.util.Set;
 public class GraphBuilder {
     private static final String TAG = "GraphBuilder";
 
-    public Graph<IStationVertex, IStationEdge> build(List<IStation> stationList) {
+    public Graph<IStationVertex, IStationEdge> build(List<Station> stationList) {
         Graph<IStationVertex, IStationEdge> graph = new SimpleWeightedGraph<>(IStationEdge.class);
-        for (IStation station: stationList) {
+        for (Station station: stationList) {
             Set<IStationVertex> vertexSet = graph.vertexSet();
             StationVertex stationVertex = new StationVertex(station);
             graph.addVertex(stationVertex);
@@ -29,6 +29,7 @@ public class GraphBuilder {
                 graph.setEdgeWeight(edge, edge.getTime());
             }
         }
+
         return graph;
     }
 }
