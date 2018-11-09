@@ -1,36 +1,38 @@
 package com.maciejwozny.nextbikeplanner;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.widget.TextView;
+import android.graphics.Color;
+import android.util.Log;
 
-import com.maciejwozny.nextbikeplanner.net.Station;
+import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
+import com.maciejwozny.nextbikeplanner.net.IStation;
 
 import org.osmdroid.api.IMapController;
+import org.osmdroid.bonuspack.routing.Road;
+import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.OverlayItem;
+import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapManager {
+    private final static String TAG = "MapManager";
     private final static GeoPoint WROCLAW_GEO_POINT = new GeoPoint(51.1078852, 17.0385376);
     private Context context;
     private MapView mapView;
-    private CalculatePathListener pathListener;
-    private ArrayList<Station> stationList;
+    private ChooseStationDialog stationDialog;
+    private ArrayList<IStation> stationList;
 
-    public MapManager(Context context,
-                      MapView mapView,
-                      CalculatePathListener pathListener,
-                      ArrayList<Station> stationList) {
+    public MapManager(Context context, MapView mapView,
+                      ArrayList<IStation> stationList) {
         this.context = context;
         this.mapView = mapView;
-        this.pathListener = pathListener;
         this.stationList = stationList;
 
         this.mapView.setTileSource(TileSourceFactory.MAPNIK);
@@ -40,16 +42,19 @@ public class MapManager {
         IMapController mapController = this.mapView.getController();
         mapController.setZoom(11.5);
         mapController.setCenter(WROCLAW_GEO_POINT);
+    }
 
+    public void setStationDialog(ChooseStationDialog stationDialog) {
+        this.stationDialog = stationDialog;
     }
 
     public void clearMap() {
         mapView.getOverlays().clear();
     }
 
-    public void initBikeStations(TextView start, TextView end) {
+    public void initBikeStations() {
         ArrayList<OverlayItem> items = new ArrayList<>();
-        for (Station station : stationList) {
+        for (IStation station : stationList) {
             items.add(new OverlayItem(station.getName(), "", //"bikes: " + station.getBikeNumber(),
                     new GeoPoint(station.getLatitude(), station.getLongitude())));
         }
@@ -63,28 +68,47 @@ public class MapManager {
 
                 @Override
                 public boolean onItemLongPress(final int index, final OverlayItem item) {
-                    DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
-                        switch (which){
-                            case DialogInterface.BUTTON_POSITIVE:
-                                MapManager.this.pathListener.setEnd(item.getTitle());
-                                end.setText(item.getTitle());
-                                break;
-
-                            case DialogInterface.BUTTON_NEGATIVE:
-                                MapManager.this.pathListener.setStart(item.getTitle());
-                                start.setText(item.getTitle());
-                                break;
-                        }
-                    };
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setMessage(item.getTitle()).setPositiveButton("End Point", dialogClickListener)
-                            .setNegativeButton("Start point", dialogClickListener).show();
+                    stationDialog.show(context, item.getTitle());
                     return false;
                 }
             }, context);
         mOverlay.setFocusItemsOnTap(true);
 
         mapView.getOverlays().add(mOverlay);
+    }
+
+    public void addBikeStations(List<IStationVertex> vertexList) {
+        ArrayList<OverlayItem> overlayItemList = new ArrayList<>();
+        for (IStationVertex vertex: vertexList) {
+            overlayItemList.add(new OverlayItem(vertex.getName(), "" ,vertex.getGeoPoint()));
+        }
+
+        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(overlayItemList,
+                new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+                    @Override
+                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onItemLongPress(final int index, final OverlayItem item) {
+                        return false;
+                    }
+                }, context);
+
+        mOverlay.setFocusItemsOnTap(true);
+
+        mapView.getOverlays().add(mOverlay);
+        mapView.invalidate();
+    }
+
+    public void showRoad(Road road) {
+        Polyline roadOverlay = RoadManager.buildRoadOverlay(
+                road, Color.RED, 8);
+        mapView.getOverlays().add(roadOverlay);
+        mapView.invalidate();
+
+        Log.d(TAG, "road length = " + road.mLength);
+        Log.d(TAG, "road duration = " + road.mDuration);
     }
 }

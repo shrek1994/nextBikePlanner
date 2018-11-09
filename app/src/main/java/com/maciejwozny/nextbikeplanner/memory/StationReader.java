@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.maciejwozny.nextbikeplanner.R;
+import com.maciejwozny.nextbikeplanner.net.IStation;
 import com.maciejwozny.nextbikeplanner.net.Station;
 
 import org.json.JSONArray;
@@ -25,11 +26,11 @@ public class StationReader {
         this.context = context;
     }
 
-    public List<Station> readStation() {
+    public List<IStation> readStation() {
         //TODO refactor - same code like in station downloader:
 
         StringBuffer buffer = new StringBuffer();
-        List<Station> stationList = new ArrayList<>();
+        List<IStation> stationList = new ArrayList<>();
         try {
             InputStream stream = context.getResources().openRawResource(R.raw.nextbike_wroclaw);
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));

@@ -20,8 +20,8 @@ public class StationDownloader implements IStationDownloader {
     }
 
     @Override
-    public List<Station> downloadStations() {
-        List<Station> stationList = new ArrayList<>();
+    public List<IStation> downloadStations() {
+        List<IStation> stationList = new ArrayList<>();
         String jsonText = null;
         try {
             jsonText = dataDownloader.execute(URL).get();

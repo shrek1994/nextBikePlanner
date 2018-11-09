@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.maciejwozny.nextbikeplanner.memory.StationReader;
 import com.maciejwozny.nextbikeplanner.net.DataDownloader;
+import com.maciejwozny.nextbikeplanner.net.IStation;
 import com.maciejwozny.nextbikeplanner.net.Station;
 import com.maciejwozny.nextbikeplanner.net.StationDownloader;
 
@@ -58,22 +59,23 @@ public class MapActivity extends AppCompatActivity {
     private MapView map = null;
     private CalculatePathListener pathListener = null;
     private MapManager mapManager = null;
+    private ChooseStationDialog stationDialog = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        ArrayList<Station> stationList = (ArrayList<Station>) intent.getSerializableExtra(MainActivity.EXTRA_STATION_LIST);
+        ArrayList<IStation> stationList = (ArrayList<IStation>) intent.getSerializableExtra(MainActivity.EXTRA_STATION_LIST);
 
         if (stationList == null) {
             StationDownloader stationDownloader = new StationDownloader(new DataDownloader());
-            stationList = (ArrayList<Station>) stationDownloader.downloadStations();
+            stationList = (ArrayList<IStation>) stationDownloader.downloadStations();
             Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
         }
 
         if (stationList == null) {
             StationReader reader = new StationReader(this);
-            stationList = (ArrayList<Station>) reader.readStation();
+            stationList = (ArrayList<IStation>) reader.readStation();
         }
 
         Context ctx = getApplicationContext();
@@ -81,12 +83,16 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_map);
 
         map = findViewById(R.id.map);
-        pathListener = new CalculatePathListener(this, stationList, map);
+        mapManager = new MapManager(this, map, stationList);
+        pathListener = new CalculatePathListener(this, stationList, mapManager);
+        stationDialog = new ChooseStationDialog(pathListener, findViewById(R.id.startTextView),
+                findViewById(R.id.endTextView));
+
         Button calculateButton = findViewById(R.id.calculateMapButton);
         calculateButton.setOnClickListener(pathListener);
 
-        mapManager = new MapManager(this, map, pathListener, stationList);
-        mapManager.initBikeStations(findViewById(R.id.startTextView), findViewById(R.id.endTextView));
+        mapManager.setStationDialog(stationDialog);
+        mapManager.initBikeStations();
     }
 
 
@@ -126,8 +132,7 @@ public class MapActivity extends AppCompatActivity {
                 return true;
             case R.id.action_clear_map:
                 mapManager.clearMap();
-                mapManager.initBikeStations(findViewById(R.id.startTextView),
-                        findViewById(R.id.endTextView));
+                mapManager.initBikeStations();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

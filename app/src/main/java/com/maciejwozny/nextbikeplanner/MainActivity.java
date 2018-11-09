@@ -18,7 +18,7 @@ import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
 import com.maciejwozny.nextbikeplanner.graph.IStationEdge;
 import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
 import com.maciejwozny.nextbikeplanner.net.DataDownloader;
-import com.maciejwozny.nextbikeplanner.net.Station;
+import com.maciejwozny.nextbikeplanner.net.IStation;
 import com.maciejwozny.nextbikeplanner.net.StationDownloader;
 
 import org.jgrapht.Graph;
@@ -31,7 +31,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     public static final String EXTRA_STATION_LIST = "EXTRA_STATION_LIST";
-    private ArrayList<Station> stationList = null;
+    private ArrayList<IStation> stationList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,14 +41,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         StationDownloader stationDownloader = new StationDownloader(new DataDownloader());
-        stationList = (ArrayList<Station>) stationDownloader.downloadStations();
+        stationList = (ArrayList<IStation>) stationDownloader.downloadStations();
         if (stationList == null) {
             Toast.makeText(this, "No internet connection !", Toast.LENGTH_LONG).show();
             return;
         }
         List<String> stationStrings = new ArrayList<>();
 
-        for(Station station : stationList) {
+        for(IStation station : stationList) {
             stationStrings.add(station.getName());
 //            Log.d(TAG, "'" + station.getName() + "'");
         }

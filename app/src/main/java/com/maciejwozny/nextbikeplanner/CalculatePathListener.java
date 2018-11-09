@@ -1,7 +1,6 @@
 package com.maciejwozny.nextbikeplanner;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -9,21 +8,14 @@ import android.widget.Toast;
 import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
 import com.maciejwozny.nextbikeplanner.graph.IStationEdge;
 import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
+import com.maciejwozny.nextbikeplanner.net.IStation;
 import com.maciejwozny.nextbikeplanner.net.RoadDownloader;
-import com.maciejwozny.nextbikeplanner.net.Station;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
-import org.osmdroid.bonuspack.routing.RoadManager;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.ItemizedIconOverlay;
-import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
-import org.osmdroid.views.overlay.OverlayItem;
-import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,15 +23,15 @@ import java.util.List;
 public class CalculatePathListener implements View.OnClickListener {
     private static final String TAG = "CalculatePathListener";
     private Activity activity;
-    private List<Station> stationList;
-    private MapView map;
+    private List<IStation> stationList;
+    private MapManager mapManager;
     private String start = null;
     private String end = null;
 
-    public CalculatePathListener(Activity activity, List<Station> stationList, MapView map) {
+    public CalculatePathListener(Activity activity, List<IStation> stationList, MapManager mapManager) {
         this.activity = activity;
         this.stationList = stationList;
-        this.map = map;
+        this.mapManager = mapManager;
     }
 
     @Override
@@ -93,42 +85,20 @@ public class CalculatePathListener implements View.OnClickListener {
         }
 
         List<IStationVertex> vertexList = path.getVertexList();
-        ArrayList<OverlayItem> overlayItemList = new ArrayList<>();
         Toast.makeText(activity, pathString, Toast.LENGTH_LONG).show();
-        map.getOverlays().clear();
-        for (IStationVertex vertex: vertexList) {
-            overlayItemList.add(new OverlayItem(vertex.getName(), "" ,vertex.getGeoPoint()));
-        }
-        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(overlayItemList,
-                new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-                    @Override
-                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                        return true;
-                    }
 
-                    @Override
-                    public boolean onItemLongPress(final int index, final OverlayItem item) {
-                        return false;
-                    }
-                }, CalculatePathListener.this.activity);
-        mOverlay.setFocusItemsOnTap(true);
-
-        map.getOverlays().add(mOverlay);
+        mapManager.clearMap();
+        mapManager.addBikeStations(vertexList);
 
         new Thread(() -> {
-            ArrayList<GeoPoint> waypoints = new ArrayList<>();
+            ArrayList<GeoPoint> geoPoints = new ArrayList<>();
             for (IStationVertex vertex: vertexList) {
-                waypoints.add(vertex.getGeoPoint());
+                geoPoints.add(vertex.getGeoPoint());
             }
 
-            Road road = new RoadDownloader(activity).downloadRoad(waypoints);
+            Road road = new RoadDownloader(activity).downloadRoad(geoPoints);
             CalculatePathListener.this.activity.runOnUiThread(() -> {
-                Polyline roadOverlay = RoadManager.buildRoadOverlay(
-                        road, Color.RED, 8);
-                map.getOverlays().add(roadOverlay);
-                map.invalidate();
-                Log.d(TAG, "road length = " + road.mLength);
-                Log.d(TAG, "road duration = " + road.mDuration);
+                mapManager.showRoad(road);
             });
 
         }).start();
