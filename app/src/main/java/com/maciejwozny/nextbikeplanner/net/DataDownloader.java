@@ -31,7 +31,7 @@ public class DataDownloader extends AsyncTask<String, Void, String> {
             Log.d(TAG, "Downloaded! " + buffer.substring(0, 100) + "...");
             return buffer.toString();
         } catch (IOException e) {
-            Log.d(TAG, "IOError: '" + e.toString() + "'");
+            Log.e(TAG, "IOError: '" + e.toString() + "'");
             e.printStackTrace();
         }
         return null;

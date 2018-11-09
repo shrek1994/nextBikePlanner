@@ -50,6 +50,17 @@ public class CalculatePathListener implements View.OnClickListener {
         Log.d(TAG, "number of vertex: " + graph.vertexSet().size());
         Log.d(TAG, "number of edges: " + graph.edgeSet().size());
         IStationVertex destination = null, source = null;
+
+        if (start == null) {
+            Toast.makeText(activity, "Select start !", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (end == null) {
+            Toast.makeText(activity, "Select end !", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         for (IStationVertex vertex : graph.vertexSet()) {
             if (start.equals(vertex.getName())) {
                 source = vertex;
@@ -60,12 +71,14 @@ public class CalculatePathListener implements View.OnClickListener {
         }
 
         if (source == null) {
-            Toast.makeText(activity, "select correct start !", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Select correct start !", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "Start not found: \'" + start + "\'");
             return;
         }
 
         if (destination == null) {
-            Toast.makeText(activity, "select correct end !", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "Select correct end !", Toast.LENGTH_LONG).show();
+            Log.e(TAG, "End not found: \'" + end + "\'");
             return;
         }
 

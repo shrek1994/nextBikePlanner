@@ -1,37 +1,52 @@
-package com.maciejwozny.nextbikeplanner.net;
+package com.maciejwozny.nextbikeplanner.memory;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.maciejwozny.nextbikeplanner.R;
+import com.maciejwozny.nextbikeplanner.net.Station;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-public class StationDownloader implements IStationDownloader {
-    private final static String TAG = "StationDownloader";
-    private static final String URL = "https://api.nextbike.net/maps/nextbike-live.json?city=148";
-    private DataDownloader dataDownloader;
+public class StationReader {
+    private final static String TAG = "StationReader";
+    private Context context;
 
-    public StationDownloader(DataDownloader dataDownloader) {
-        this.dataDownloader = dataDownloader;
+    public StationReader(Context context) {
+        this.context = context;
     }
 
-    @Override
-    public List<Station> downloadStations() {
+    public List<Station> readStation() {
+        //TODO refactor - same code like in station downloader:
+
+        StringBuffer buffer = new StringBuffer();
         List<Station> stationList = new ArrayList<>();
-        String jsonText = null;
         try {
-            jsonText = dataDownloader.execute(URL).get();
-        } catch (InterruptedException | ExecutionException e) {
+            InputStream stream = context.getResources().openRawResource(R.raw.nextbike_wroclaw);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line+"\n");
+            }
+
+            Log.d(TAG, "Read! " + buffer.substring(0, 100) + "...");
+        } catch (IOException e) {
+            Log.e(TAG, "IOError: '" + e.toString() + "'");
             e.printStackTrace();
         }
-        if (jsonText == null) {
-            Log.e(TAG, "No internet connection!");
-            return null;
-        }
+
+        String jsonText = buffer.toString();
 
         Log.d(TAG, jsonText);
         try {

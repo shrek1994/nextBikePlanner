@@ -11,7 +11,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.maciejwozny.nextbikeplanner.memory.StationReader;
 import com.maciejwozny.nextbikeplanner.net.DataDownloader;
 import com.maciejwozny.nextbikeplanner.net.Station;
 import com.maciejwozny.nextbikeplanner.net.StationDownloader;
@@ -75,6 +77,12 @@ public class MapActivity extends AppCompatActivity {
         if (stationList == null) {
             StationDownloader stationDownloader = new StationDownloader(new DataDownloader());
             stationList = (ArrayList<Station>) stationDownloader.downloadStations();
+            Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
+        }
+
+        if (stationList == null) {
+            StationReader reader = new StationReader(this);
+            stationList = (ArrayList<Station>) reader.readStation();
         }
 
         Context ctx = getApplicationContext();

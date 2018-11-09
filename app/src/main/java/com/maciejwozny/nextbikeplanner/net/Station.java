@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import java.io.Serializable;
 
-public class Station implements Parcelable {
+public class Station extends IStation {
     private String name;
     private int idNumber;
     private int bikeNumber;
@@ -53,32 +53,32 @@ public class Station implements Parcelable {
         this.latitude = latitude;
     }
 
-//    @Override
+    @Override
     public String getName() {
         return name;
     }
 
-//    @Override
+    @Override
     public int getIdNumber() {
         return idNumber;
     }
 
-//    @Override
+    @Override
     public int getBikeNumber() {
         return bikeNumber;
     }
 
-//    @Override
+    @Override
     public int getFreeRacksNumber() {
         return freeRacksNumber;
     }
 
-//    @Override
+    @Override
     public double getLongitude() {
         return longitude;
     }
 
-//    @Override
+    @Override
     public double getLatitude() {
         return latitude;
     }
