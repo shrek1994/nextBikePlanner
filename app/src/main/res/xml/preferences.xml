@@ -14,8 +14,8 @@
             android:title="Custom Server"
             android:defaultValue="false"/>
         <EditTextPreference
-            android:dependency="pref_custom_osrm"
             android:key="pref_osrm_ip"
+            android:dependency="pref_custom_osrm"
             android:summary="IP of Open Street Route Machine which calculate route"
             android:defaultValue="192.168.0.6:5000"
             android:title="Open Street Route Machine IP"/>

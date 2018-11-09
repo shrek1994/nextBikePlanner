@@ -10,8 +10,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class DataDownloader extends AsyncTask<Void, Void, String> {
-    private static final String mURL = "https://api.nextbike.net/maps/nextbike-live.json?city=148";
+public class DataDownloader extends AsyncTask<String, Void, String> {
     private static final String TAG = "DataDownloader";
 
     private String downloadFile(String urlTxt) {
@@ -39,7 +38,9 @@ public class DataDownloader extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected String doInBackground(Void... voids) {
-        return downloadFile(mURL);
+    protected String doInBackground(String... url) {
+        if (url.length > 0)
+            return downloadFile(url[0]);
+        return null;
     }
 }

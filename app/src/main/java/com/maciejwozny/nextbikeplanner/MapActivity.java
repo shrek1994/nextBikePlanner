@@ -171,6 +171,8 @@ public class MapActivity extends AppCompatActivity {
             case R.id.action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
+            case R.id.action_clear_map:
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

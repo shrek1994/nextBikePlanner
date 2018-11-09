@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
 import com.maciejwozny.nextbikeplanner.graph.IStationEdge;
 import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
+import com.maciejwozny.nextbikeplanner.net.RoadDownloader;
 import com.maciejwozny.nextbikeplanner.net.Station;
 
 import org.jgrapht.Graph;
@@ -102,36 +103,20 @@ public class CalculatePathListener implements View.OnClickListener {
         map.getOverlays().add(mOverlay);
 
         new Thread(() -> {
-            RoadManager roadManager = new OSRMRoadManager(activity);
             ArrayList<GeoPoint> waypoints = new ArrayList<>();
             for (IStationVertex vertex: vertexList) {
                 waypoints.add(vertex.getGeoPoint());
             }
 
-            Road road = roadManager.getRoad(waypoints);
-            while (road.mStatus != Road.STATUS_OK) {
-                Log.e(TAG, "Status - not OK !");
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                road = roadManager.getRoad(waypoints);
-            }
-
-            Road finalRoad = road;
+            Road road = new RoadDownloader(activity).downloadRoad(waypoints);
             CalculatePathListener.this.activity.runOnUiThread(() -> {
                 Polyline roadOverlay = RoadManager.buildRoadOverlay(
-                        finalRoad, Color.RED, 8);
+                        road, Color.RED, 8);
                 map.getOverlays().add(roadOverlay);
                 map.invalidate();
-                Log.d(TAG, "road length = " + finalRoad.mLength);
-                Log.d(TAG, "road duration = " + finalRoad.mDuration);
+                Log.d(TAG, "road length = " + road.mLength);
+                Log.d(TAG, "road duration = " + road.mDuration);
             });
-
-        }).start();
-
-        new Thread(() -> {
 
         }).start();
     }

@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutionException;
 
 public class StationDownloader implements IStationDownloader {
     private final static String TAG = "StationDownloader";
+    private static final String URL = "https://api.nextbike.net/maps/nextbike-live.json?city=148";
     private DataDownloader dataDownloader;
 
     public StationDownloader(DataDownloader dataDownloader) {
@@ -23,13 +24,13 @@ public class StationDownloader implements IStationDownloader {
         List<Station> stationList = new ArrayList<>();
         String jsonText = null;
         try {
-            jsonText = dataDownloader.execute().get();
+            jsonText = dataDownloader.execute(URL).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         if (jsonText == null) {
             Log.e(TAG, "No internet connection!");
-            return null;
+            return stationList;
         }
 
         Log.d(TAG, jsonText);
