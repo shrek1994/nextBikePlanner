@@ -97,7 +97,7 @@ public class CalculatePathListener implements View.OnClickListener {
         Toast.makeText(activity, pathString, Toast.LENGTH_LONG).show();
         map.getOverlays().clear();
         for (IStationVertex vertex: vertexList) {
-            overlayItemList.add(new OverlayItem(vertex.getName(), "",vertex.getGeoPoint()));
+            overlayItemList.add(new OverlayItem(vertex.getName(), "" ,vertex.getGeoPoint()));
         }
         ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(overlayItemList,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {

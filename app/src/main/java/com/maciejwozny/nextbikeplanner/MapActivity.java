@@ -1,8 +1,6 @@
 package com.maciejwozny.nextbikeplanner;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +8,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.maciejwozny.nextbikeplanner.memory.StationReader;
@@ -18,14 +15,8 @@ import com.maciejwozny.nextbikeplanner.net.DataDownloader;
 import com.maciejwozny.nextbikeplanner.net.Station;
 import com.maciejwozny.nextbikeplanner.net.StationDownloader;
 
-import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
-import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.ItemizedIconOverlay;
-import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
-import org.osmdroid.views.overlay.OverlayItem;
 
 import java.util.ArrayList;
 
@@ -64,9 +55,9 @@ import java.util.ArrayList;
 
 public class MapActivity extends AppCompatActivity {
     private final static String TAG = "MapActivity";
-    private final static GeoPoint WROCLAW_GEO_POINT = new GeoPoint(51.1078852, 17.0385376);
     private MapView map = null;
     private CalculatePathListener pathListener = null;
+    private MapManager mapManager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,54 +85,8 @@ public class MapActivity extends AppCompatActivity {
         Button calculateButton = findViewById(R.id.calculateMapButton);
         calculateButton.setOnClickListener(pathListener);
 
-        map.setTileSource(TileSourceFactory.MAPNIK);
-        map.setBuiltInZoomControls(true);
-        map.setMultiTouchControls(true);
-
-        IMapController mapController = map.getController();
-        mapController.setZoom(11.5);
-        mapController.setCenter(WROCLAW_GEO_POINT);
-
-        ArrayList<OverlayItem> items = new ArrayList<>();
-        for (Station station : stationList) {
-            items.add(new OverlayItem(station.getName(), "bikes: " + station.getBikeNumber(),
-                    new GeoPoint(station.getLatitude(), station.getLongitude())));
-        }
-
-        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,
-            new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-            @Override
-            public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                return true;
-            }
-
-            @Override
-            public boolean onItemLongPress(final int index, final OverlayItem item) {
-                DialogInterface.OnClickListener dialogClickListener = (dialog, which) -> {
-                    switch (which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            MapActivity.this.pathListener.setStart(item.getTitle());
-                            TextView start = MapActivity.this.findViewById(R.id.startTextView);
-                            start.setText(item.getTitle());
-                            break;
-
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            MapActivity.this.pathListener.setEnd(item.getTitle());
-                            TextView end = MapActivity.this.findViewById(R.id.endTextView);
-                            end.setText(item.getTitle());
-                            break;
-                    }
-                };
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(MapActivity.this);
-                builder.setMessage(item.getTitle()).setPositiveButton("Start point", dialogClickListener)
-                        .setNegativeButton("End Point", dialogClickListener).show();
-                return false;
-            }
-        }, ctx);
-        mOverlay.setFocusItemsOnTap(true);
-
-        map.getOverlays().add(mOverlay);
+        mapManager = new MapManager(this, map, pathListener, stationList);
+        mapManager.initBikeStations(findViewById(R.id.startTextView), findViewById(R.id.endTextView));
     }
 
 
@@ -180,6 +125,9 @@ public class MapActivity extends AppCompatActivity {
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case R.id.action_clear_map:
+                mapManager.clearMap();
+                mapManager.initBikeStations(findViewById(R.id.startTextView),
+                        findViewById(R.id.endTextView));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
