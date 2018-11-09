@@ -108,6 +108,11 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra(EXTRA_STATION_LIST, stationList);
             startActivity(intent);
         });
+
+        Button setting = findViewById(R.id.settingButton);
+        setting.setOnClickListener(view -> {
+            startActivity(new Intent(this, SettingsActivity.class));
+        });
     }
 
     @Override
@@ -126,6 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 

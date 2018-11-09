@@ -1,8 +1,6 @@
 package com.maciejwozny.nextbikeplanner;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
@@ -80,13 +78,12 @@ public class CalculatePathListener implements View.OnClickListener {
                     + " = " + edge.getTime() + " meters\n";
         }
 
-        List<IStationVertex> vertex = path.getVertexList();
+        List<IStationVertex> vertexList = path.getVertexList();
         ArrayList<OverlayItem> overlayItemList = new ArrayList<>();
         Toast.makeText(activity, pathString, Toast.LENGTH_LONG).show();
         map.getOverlays().clear();
-        for (IStationVertex ver: vertex) {
-            overlayItemList.add(new OverlayItem(ver.getName(), "",
-                    new GeoPoint(ver.getLatitude(), ver.getLongitude())));
+        for (IStationVertex vertex: vertexList) {
+            overlayItemList.add(new OverlayItem(vertex.getName(), "",vertex.getGeoPoint()));
         }
         ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(overlayItemList,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
@@ -107,9 +104,8 @@ public class CalculatePathListener implements View.OnClickListener {
         new Thread(() -> {
             RoadManager roadManager = new OSRMRoadManager(activity);
             ArrayList<GeoPoint> waypoints = new ArrayList<>();
-            for (IStationVertex ver: vertex) {
-                waypoints.add(new GeoPoint(ver.getLatitude(),
-                        ver.getLongitude()));
+            for (IStationVertex vertex: vertexList) {
+                waypoints.add(vertex.getGeoPoint());
             }
 
             Road road = roadManager.getRoad(waypoints);
@@ -132,6 +128,10 @@ public class CalculatePathListener implements View.OnClickListener {
                 Log.d(TAG, "road length = " + finalRoad.mLength);
                 Log.d(TAG, "road duration = " + finalRoad.mDuration);
             });
+
+        }).start();
+
+        new Thread(() -> {
 
         }).start();
     }

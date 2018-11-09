@@ -16,12 +16,12 @@ public class StationDownloaderTest {
     @Before
     public void setUp() throws Exception {
         sut = new StationDownloader(dataDownloader);
-        when(dataDownloader.downloadFile()).thenReturn(JSON);
+//        when(dataDownloader.downloadFile()).thenReturn(JSON);
     }
 
     @Test
     public void shouldCorrectParseJsonToStationList() {
-        List<IStation> stationList = sut.downloadStations();
+        List<Station> stationList = sut.downloadStations();
 
         assertEquals(3, stationList.size());
 

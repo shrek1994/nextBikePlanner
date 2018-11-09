@@ -24,9 +24,7 @@ public class StationDownloader implements IStationDownloader {
         String jsonText = null;
         try {
             jsonText = dataDownloader.execute().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         if (jsonText == null) {

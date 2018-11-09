@@ -20,9 +20,10 @@ public class GraphBuilder {
             StationVertex stationVertex = new StationVertex(station);
             graph.addVertex(stationVertex);
             for (IStationVertex vertex: vertexSet) {
-                if (stationVertex == vertex) continue;
+                if (stationVertex == vertex)
+                    continue;
                 IStationEdge edge = new StationEdge(stationVertex, vertex);
-                if (edge.getTime() > 3000) continue; // TODO remove it !
+                if (edge.getTime() > 4000) continue; // TODO remove it !
                 Log.d(TAG, stationVertex.getName() + " - " + vertex.getName()
                         + " = " + edge.getTime());
                 graph.addEdge(stationVertex, vertex, edge);

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:title="Internet"
+        android:key="pref_internet">
+        <!--<CheckBoxPreference-->
+            <!--android:key="pref_offline"-->
+            <!--android:summary="Reading bike station from database not from Internet"-->
+            <!--android:title="Offline"-->
+            <!--android:defaultValue="false"/>-->
+        <CheckBoxPreference
+            android:key="pref_custom_osrm"
+            android:summary="Calculating route using custom server"
+            android:title="Custom Server"
+            android:defaultValue="false"/>
+        <EditTextPreference
+            android:dependency="pref_custom_osrm"
+            android:key="pref_osrm_ip"
+            android:summary="IP of Open Street Route Machine which calculate route"
+            android:defaultValue="192.168.0.6:5000"
+            android:title="Open Street Route Machine IP"/>
+    </PreferenceCategory>
+</PreferenceScreen>

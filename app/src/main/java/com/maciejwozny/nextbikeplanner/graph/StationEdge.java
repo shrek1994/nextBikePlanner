@@ -4,12 +4,13 @@ class StationEdge implements IStationEdge {
     private static final String TAG = "StationEdge";
     private IStationVertex source;
     private IStationVertex destination;
-    private float time;
+    private double time;
 
     public StationEdge(IStationVertex source, IStationVertex destination) {
         this.source = source;
         this.destination = destination;
-        time = source.getLocation().distanceTo(destination.getLocation());
+
+        time = source.getGeoPoint().distanceToAsDouble(destination.getGeoPoint());
     }
 
     @Override
@@ -23,7 +24,7 @@ class StationEdge implements IStationEdge {
     }
 
     @Override
-    public float getTime() {
+    public double getTime() {
         return time;
     }
 }

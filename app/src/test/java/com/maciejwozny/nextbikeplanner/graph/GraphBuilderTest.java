@@ -22,7 +22,7 @@ public class GraphBuilderTest {
 
     @Test
     public void shouldCorrectCreateGraph() {
-        List<IStation> stationList = new ArrayList<>();
+        List<Station> stationList = new ArrayList<>();
         stationList.add(new Station("a", 0 ,0 ,0, 0.1, 0.1));
         stationList.add(new Station("b", 0 ,0 ,0, 0.3, 0.3));
         stationList.add(new Station("c", 0 ,0 ,0, 0.5, 0.5));

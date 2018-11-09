@@ -4,13 +4,17 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.maciejwozny.nextbikeplanner.net.DataDownloader;
 import com.maciejwozny.nextbikeplanner.net.Station;
+import com.maciejwozny.nextbikeplanner.net.StationDownloader;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -30,7 +34,7 @@ import java.util.ArrayList;
 // length 2,5km
 // car time: 6 min, avg: 25km/h
 // bike: 2,7 km, 12 min, avg: 13,5km/h
-// OSRM:
+// OSRM (car):
 // road length = 2.5028 [km]
 // road duration = 367.0 [s] = 6.1 [min]
 // avg speed: 24,5 km /h
@@ -58,14 +62,21 @@ import java.util.ArrayList;
 
 public class MapActivity extends AppCompatActivity {
     private final static String TAG = "MapActivity";
+    private final static GeoPoint WROCLAW_GEO_POINT = new GeoPoint(51.1078852, 17.0385376);
     private MapView map = null;
-    private CalculatePathListener pathListener;
+    private CalculatePathListener pathListener = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         ArrayList<Station> stationList = (ArrayList<Station>) intent.getSerializableExtra(MainActivity.EXTRA_STATION_LIST);
+
+        if (stationList == null) {
+            StationDownloader stationDownloader = new StationDownloader(new DataDownloader());
+            stationList = (ArrayList<Station>) stationDownloader.downloadStations();
+        }
+
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.activity_map);
@@ -81,15 +92,14 @@ public class MapActivity extends AppCompatActivity {
 
         IMapController mapController = map.getController();
         mapController.setZoom(11.5);
-        GeoPoint startPoint = new GeoPoint(51.1078852, 17.0385376);
-        mapController.setCenter(startPoint);
+        mapController.setCenter(WROCLAW_GEO_POINT);
 
         ArrayList<OverlayItem> items = new ArrayList<>();
         for (Station station : stationList) {
             items.add(new OverlayItem(station.getName(), "bikes: " + station.getBikeNumber(),
                     new GeoPoint(station.getLatitude(), station.getLongitude())));
         }
-        //the overlay
+
         ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,
             new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
             @Override
@@ -103,57 +113,27 @@ public class MapActivity extends AppCompatActivity {
                     switch (which){
                         case DialogInterface.BUTTON_POSITIVE:
                             MapActivity.this.pathListener.setStart(item.getTitle());
+                            TextView start = MapActivity.this.findViewById(R.id.startTextView);
+                            start.setText(item.getTitle());
                             break;
 
                         case DialogInterface.BUTTON_NEGATIVE:
                             MapActivity.this.pathListener.setEnd(item.getTitle());
+                            TextView end = MapActivity.this.findViewById(R.id.endTextView);
+                            end.setText(item.getTitle());
                             break;
                     }
                 };
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MapActivity.this);
-                builder.setMessage("").setPositiveButton("Start point", dialogClickListener)
+                builder.setMessage(item.getTitle()).setPositiveButton("Start point", dialogClickListener)
                         .setNegativeButton("End Point", dialogClickListener).show();
                 return false;
             }
-        }, this);
+        }, ctx);
         mOverlay.setFocusItemsOnTap(true);
 
         map.getOverlays().add(mOverlay);
-//        new Thread(() -> {
-//            RoadManager roadManager = new OSRMRoadManager(MapActivity.this);
-//            ArrayList<GeoPoint> waypoints = new ArrayList<>();
-//            waypoints.add(new GeoPoint(stationList.get(0).getLatitude(),
-//                    stationList.get(0).getLongitude()));
-//            waypoints.add(new GeoPoint(stationList.get(1).getLatitude(),
-//                    stationList.get(1).getLongitude()));
-//
-//            Log.d(TAG, stationList.get(0).getName() + " -> " + waypoints.get(0).toDoubleString());
-//            Log.d(TAG, stationList.get(1).getName() + " -> " + waypoints.get(1).toDoubleString());
-//
-//            Road road = roadManager.getRoad(waypoints);
-//            while (road.mStatus != Road.STATUS_OK) {
-//                Log.e(TAG, "Status - not OK !");
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//                road = roadManager.getRoad(waypoints);
-//            }
-//
-//            Road finalRoad = road;
-//            runOnUiThread(() -> {
-//
-//                Polyline roadOverlay = RoadManager.buildRoadOverlay(
-//                        finalRoad, Color.RED, 8);
-//                map.getOverlays().add(roadOverlay);
-//                map.invalidate();
-//                Log.d(TAG, "road length = " + finalRoad.mLength);
-//                Log.d(TAG, "road duration = " + finalRoad.mDuration);
-//            });
-//        }).start();
-
     }
 
 
@@ -176,5 +156,23 @@ public class MapActivity extends AppCompatActivity {
 //        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 //        Configuration.getInstance().save(this, prefs);
         map.onPause();  //needed for compass, my location overlays, v6.0.0 and up
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
