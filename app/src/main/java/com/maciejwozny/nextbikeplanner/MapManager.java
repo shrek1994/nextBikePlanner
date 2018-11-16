@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.util.Log;
 
 import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
-import com.maciejwozny.nextbikeplanner.net.IStation;
+import com.maciejwozny.nextbikeplanner.station.IStation;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.Road;
@@ -109,6 +109,6 @@ public class MapManager {
         mapView.invalidate();
 
         Log.d(TAG, "road length = " + road.mLength);
-        Log.d(TAG, "road duration = " + road.mDuration);
+        Log.d(TAG, "road duration = " + road.mDuration / 60 + "[min]");
     }
 }

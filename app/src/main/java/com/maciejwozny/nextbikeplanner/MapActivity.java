@@ -1,8 +1,12 @@
 package com.maciejwozny.nextbikeplanner;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,11 +14,12 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.maciejwozny.nextbikeplanner.memory.StationReader;
+import com.maciejwozny.nextbikeplanner.station.StationListBuilder;
+import com.maciejwozny.nextbikeplanner.station.StationParser;
+import com.maciejwozny.nextbikeplanner.station.StationReader;
 import com.maciejwozny.nextbikeplanner.net.DataDownloader;
-import com.maciejwozny.nextbikeplanner.net.IStation;
-import com.maciejwozny.nextbikeplanner.net.Station;
-import com.maciejwozny.nextbikeplanner.net.StationDownloader;
+import com.maciejwozny.nextbikeplanner.station.IStation;
+import com.maciejwozny.nextbikeplanner.station.StationDownloader;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.views.MapView;
@@ -60,23 +65,14 @@ public class MapActivity extends AppCompatActivity {
     private CalculatePathListener pathListener = null;
     private MapManager mapManager = null;
     private ChooseStationDialog stationDialog = null;
+    private StationListBuilder stationListBuilder = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = getIntent();
-        ArrayList<IStation> stationList = (ArrayList<IStation>) intent.getSerializableExtra(MainActivity.EXTRA_STATION_LIST);
+        initStationBuilder();
 
-        if (stationList == null) {
-            StationDownloader stationDownloader = new StationDownloader(new DataDownloader());
-            stationList = (ArrayList<IStation>) stationDownloader.downloadStations();
-            Toast.makeText(this, "No internet connection!", Toast.LENGTH_LONG).show();
-        }
-
-        if (stationList == null) {
-            StationReader reader = new StationReader(this);
-            stationList = (ArrayList<IStation>) reader.readStation();
-        }
+        ArrayList<IStation> stationList = stationListBuilder.create();
 
         Context ctx = getApplicationContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -93,8 +89,22 @@ public class MapActivity extends AppCompatActivity {
 
         mapManager.setStationDialog(stationDialog);
         mapManager.initBikeStations();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            // Do the file write
+        } else {
+            // Request permission from the user
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        }
     }
 
+    private void initStationBuilder() {
+        StationParser stationParser = new StationParser();
+        StationDownloader stationDownloader = new StationDownloader(new DataDownloader(), stationParser);
+        StationReader stationReader = new StationReader(this, stationParser);
+        stationListBuilder = new StationListBuilder(stationDownloader, stationReader);
+    }
 
 
     @Override

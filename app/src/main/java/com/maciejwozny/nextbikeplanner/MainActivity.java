@@ -18,8 +18,9 @@ import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
 import com.maciejwozny.nextbikeplanner.graph.IStationEdge;
 import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
 import com.maciejwozny.nextbikeplanner.net.DataDownloader;
-import com.maciejwozny.nextbikeplanner.net.IStation;
-import com.maciejwozny.nextbikeplanner.net.StationDownloader;
+import com.maciejwozny.nextbikeplanner.station.IStation;
+import com.maciejwozny.nextbikeplanner.station.StationDownloader;
+import com.maciejwozny.nextbikeplanner.station.StationParser;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -40,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        StationDownloader stationDownloader = new StationDownloader(new DataDownloader());
-        stationList = (ArrayList<IStation>) stationDownloader.downloadStations();
+        StationDownloader stationDownloader
+                = new StationDownloader(new DataDownloader(), new StationParser());
+        stationList = stationDownloader.downloadStations();
         if (stationList == null) {
             Toast.makeText(this, "No internet connection !", Toast.LENGTH_LONG).show();
             return;
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button calculate = findViewById(R.id.calculateButton);
         calculate.setOnClickListener((View view) -> {
-            Graph<IStationVertex, IStationEdge> graph = new GraphBuilder().build(stationList);
+            Graph<IStationVertex, IStationEdge> graph = new GraphBuilder().build(stationList, this);
 
             Log.d(TAG, graph.toString());
             Log.d(TAG, "number of vertex: " + graph.vertexSet().size());
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             String pathString = "";
             for (IStationEdge edge: stationEdges) {
                 pathString += edge.getDestination().getName() + " -> " + edge.getSource().getName()
-                        + " = " + edge.getTime() + " meters\n";
+                        + " = " + edge.getRoad().mLength + " meters\n";
             }
             Log.d(TAG, pathString);
             TextView text = MainActivity.this.findViewById(R.id.outputText);

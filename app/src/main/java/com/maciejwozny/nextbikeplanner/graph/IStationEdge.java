@@ -1,7 +1,11 @@
 package com.maciejwozny.nextbikeplanner.graph;
 
-public interface IStationEdge {
+import org.osmdroid.bonuspack.routing.Road;
+
+import java.io.Serializable;
+
+public interface IStationEdge extends Serializable {
     IStationVertex getSource();
     IStationVertex getDestination();
-    double getTime();
+    Road getRoad();
 }
