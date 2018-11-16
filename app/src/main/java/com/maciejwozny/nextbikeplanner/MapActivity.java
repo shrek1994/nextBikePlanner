@@ -12,16 +12,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.maciejwozny.nextbikeplanner.station.StationListBuilder;
-import com.maciejwozny.nextbikeplanner.station.StationParser;
-import com.maciejwozny.nextbikeplanner.station.StationReader;
-import com.maciejwozny.nextbikeplanner.net.DataDownloader;
+import com.maciejwozny.nextbikeplanner.station.IStationFactory;
+import com.maciejwozny.nextbikeplanner.station.StationFactory;
 import com.maciejwozny.nextbikeplanner.station.IStation;
-import com.maciejwozny.nextbikeplanner.station.StationDownloader;
 
-import org.osmdroid.config.Configuration;
 import org.osmdroid.views.MapView;
 
 import java.util.ArrayList;
@@ -65,17 +60,17 @@ public class MapActivity extends AppCompatActivity {
     private CalculatePathListener pathListener = null;
     private MapManager mapManager = null;
     private ChooseStationDialog stationDialog = null;
-    private StationListBuilder stationListBuilder = null;
+    private IStationFactory stationFactory = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initStationBuilder();
+        stationFactory = new StationFactory(this);
 
-        ArrayList<IStation> stationList = stationListBuilder.create();
+        ArrayList<IStation> stationList = stationFactory.createStationList();
 
-        Context ctx = getApplicationContext();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
+//        Context ctx = getApplicationContext();
+//        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
         setContentView(R.layout.activity_map);
 
         map = findViewById(R.id.map);
@@ -97,13 +92,6 @@ public class MapActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         }
-    }
-
-    private void initStationBuilder() {
-        StationParser stationParser = new StationParser();
-        StationDownloader stationDownloader = new StationDownloader(new DataDownloader(), stationParser);
-        StationReader stationReader = new StationReader(this, stationParser);
-        stationListBuilder = new StationListBuilder(stationDownloader, stationReader);
     }
 
 

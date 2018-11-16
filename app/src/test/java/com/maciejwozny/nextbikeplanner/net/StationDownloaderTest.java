@@ -19,7 +19,7 @@ public class StationDownloaderTest {
 
 //    @Test
 //    public void shouldCorrectParseJsonToStationList() {
-//        List<Station> stationList = sut.downloadStations();
+//        List<Station> stationList = sut.createStationList();
 //
 //        assertEquals(3, stationList.size());
 //

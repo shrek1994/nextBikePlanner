@@ -12,19 +12,18 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StationReader {
+public class StationReader extends IStationsBuilder {
     private final static String TAG = "StationReader";
     private Context context;
-    private StationParser stationParser;
 
-    public StationReader(Context context, StationParser stationParser) {
+    public StationReader(IStationsBuilder nextStationBuilder, Context context) {
+        super(nextStationBuilder);
         this.context = context;
-        this.stationParser = stationParser;
     }
 
-    public ArrayList<IStation> readStation() {
+    @Override
+    String getStation() {
         StringBuffer buffer = new StringBuffer();
-        ArrayList<IStation> stationList = new ArrayList<>();
         try {
             InputStream stream = context.getResources().openRawResource(R.raw.nextbike_wroclaw);
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -41,8 +40,6 @@ public class StationReader {
             e.printStackTrace();
         }
 
-        String jsonText = buffer.toString();
-
-        return stationParser.parse(jsonText);
+        return buffer.toString();
     }
 }

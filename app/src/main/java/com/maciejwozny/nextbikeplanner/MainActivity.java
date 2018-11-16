@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         StationDownloader stationDownloader
-                = new StationDownloader(new DataDownloader(), new StationParser());
-        stationList = stationDownloader.downloadStations();
+                = new StationDownloader(null, new DataDownloader());
+        stationList = new StationParser().parse(stationDownloader.createJsonWithStationList());
         if (stationList == null) {
             Toast.makeText(this, "No internet connection !", Toast.LENGTH_LONG).show();
             return;
