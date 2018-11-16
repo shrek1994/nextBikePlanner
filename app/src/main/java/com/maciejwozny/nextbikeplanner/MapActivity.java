@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.maciejwozny.nextbikeplanner.station.IStationFactory;
 import com.maciejwozny.nextbikeplanner.station.StationFactory;
@@ -61,6 +62,7 @@ public class MapActivity extends AppCompatActivity {
     private MapManager mapManager = null;
     private ChooseStationDialog stationDialog = null;
     private IStationFactory stationFactory = null;
+    private ProgressBar progressBar = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +76,9 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_map);
 
         map = findViewById(R.id.map);
+        progressBar = findViewById(R.id.progressBar);
         mapManager = new MapManager(this, map, stationList);
-        pathListener = new CalculatePathListener(this, stationList, mapManager);
+        pathListener = new CalculatePathListener(this, stationList, mapManager, progressBar);
         stationDialog = new ChooseStationDialog(pathListener, findViewById(R.id.startTextView),
                 findViewById(R.id.endTextView));
 

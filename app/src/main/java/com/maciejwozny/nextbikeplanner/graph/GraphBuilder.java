@@ -21,9 +21,8 @@ public class GraphBuilder implements IGraphBuilder {
     private static final String TAG = "GraphBuilder";
     private EdgeFactory factory;
 
-    public GraphBuilder(Context context) {
-
-        factory = new EdgeFactory(new EdgeReader(context), context);
+    public GraphBuilder(Context context, EdgeReader edgeReader) {
+        factory = new EdgeFactory(context, edgeReader);
     }
 
     @Override

@@ -3,8 +3,10 @@ package com.maciejwozny.nextbikeplanner;
 import android.app.Activity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.maciejwozny.nextbikeplanner.graph.EdgeReader;
 import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
 import com.maciejwozny.nextbikeplanner.graph.IStationEdge;
 import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
@@ -27,17 +29,24 @@ public class CalculatePathListener implements View.OnClickListener {
     private List<IStation> stationList;
     private MapManager mapManager;
     private RoadDownloader roadDownloader;
+    private EdgeReader edgeReader;
     private String start = null;
     private String end = null;
+    private ProgressBar progressBar;
     private Graph<IStationVertex, IStationEdge> graph;
-    private Thread createGraph = new Thread(
-            () -> graph = new GraphBuilder(activity).buildGraph(stationList));
+    private Thread createGraph = new Thread(() -> {
+                graph = new GraphBuilder(activity, edgeReader).buildGraph(stationList);
+                activity.runOnUiThread(() -> progressBar.setVisibility(View.GONE));
+            });
 
-    public CalculatePathListener(Activity activity, List<IStation> stationList, MapManager mapManager) {
+    public CalculatePathListener(Activity activity, List<IStation> stationList,
+                                 MapManager mapManager, ProgressBar progressBar) {
         this.activity = activity;
         this.stationList = stationList;
         this.mapManager = mapManager;
         this.roadDownloader = new RoadDownloader(activity);
+        this.edgeReader = new EdgeReader(activity);
+        this.progressBar = progressBar;
         createGraph.start();
     }
 
@@ -109,18 +118,18 @@ public class CalculatePathListener implements View.OnClickListener {
             geoPoints.add(vertex.getGeoPoint());
         }
 
-        try {
-            RoadDownloader roadDownloader = new RoadDownloader(activity);
-            Road road = roadDownloader.execute(geoPoints).get();
-            mapManager.showRoad(road);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+        for (IStationEdge edge: stationEdges) {
+            Road road = edgeReader.getRoad(edge.getSource(), edge.getDestination());
+            try {
+                if (road == null) {
+                    RoadDownloader roadDownloader = new RoadDownloader(activity);
+                    road = roadDownloader.execute(geoPoints).get();
+                }
+                mapManager.showRoad(road);
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
-//        new Thread(() -> {
-//            CalculatePathListener.this.activity.runOnUiThread(() -> {
-//            });
-//
-//        }).start();
     }
 
     public void setStart(String start) {

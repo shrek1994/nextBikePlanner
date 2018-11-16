@@ -9,7 +9,6 @@ import org.osmdroid.bonuspack.routing.Road;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class EdgeFactory {
@@ -17,14 +16,12 @@ public class EdgeFactory {
     private static final double TWENTY_MINUTES = 20 * 60;
     private static final double AVG_SPEED_KM_H = 12;
     private static final double AVG_SPEED_M_S = AVG_SPEED_KM_H * 1000 / (60 * 60);
-    private EdgeReader edgeReader;
     private Context context;
-    private List<IStationEdge> stationEdges;
+    private EdgeReader edgeReader;
 
-    public EdgeFactory(EdgeReader edgeReader, Context context) {
-        this.edgeReader = edgeReader;
+    public EdgeFactory(Context context, EdgeReader edgeReader) {
         this.context = context;
-        stationEdges = edgeReader.readGraphEdges();
+        this.edgeReader = edgeReader;
     }
 
     /*
@@ -35,19 +32,8 @@ public class EdgeFactory {
         if (distance > 4000) {
             return null;
         }
-        Road road = null;
-        for (IStationEdge edge: stationEdges) {
-            if (edge.getSource().equals(source) && edge.getDestination().equals(destination)) {
-                Log.d(TAG, "found road in file: " + edge.toString());
-                road = edge.getRoad();
-                break;
-            }
-            if (edge.getDestination().equals(source) && edge.getSource().equals(destination)) {
-                Log.d(TAG, "found road in file: " + edge.toString());
-                road = edge.getRoad();
-                break;
-            }
-        }
+
+        Road road = edgeReader.getRoad(source, destination);
 
         try {
             if (road == null) {
