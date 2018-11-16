@@ -12,7 +12,7 @@ public class StationParser {
     private final static String TAG = "StationParser";
 
     public ArrayList<IStation> parse(String jsonText) {
-        Log.d(TAG, jsonText);
+        Log.d(TAG, jsonText.substring(0, 100) + "...");
         ArrayList<IStation> stationList = new ArrayList<>();
         try {
             JSONObject json = new JSONObject(jsonText);

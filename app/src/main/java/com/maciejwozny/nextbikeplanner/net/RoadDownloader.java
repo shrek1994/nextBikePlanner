@@ -26,7 +26,7 @@ public class RoadDownloader extends AsyncTask<ArrayList<GeoPoint>, Void, Road> {
     }
 
     private Road downloadRoad(ArrayList<GeoPoint> geoPoints) {
-        String service = SERVICE;
+        String service = OSRM_SERVICE;
         boolean customOsrm = preferences.getBoolean("pref_custom_osrm", false);
         Log.d(TAG, "pref_custom_osrm = " + customOsrm);
         if (customOsrm) {
@@ -51,6 +51,7 @@ public class RoadDownloader extends AsyncTask<ArrayList<GeoPoint>, Void, Road> {
 
     @Override
     protected Road doInBackground(ArrayList<GeoPoint>... geoPoints) {
+        Log.d(TAG, "starting ... : " + geoPoints);
         if (geoPoints.length > 0)
             return downloadRoad(geoPoints[0]);
         return null;

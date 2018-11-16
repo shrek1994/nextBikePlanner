@@ -4,6 +4,7 @@ import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
 import com.maciejwozny.nextbikeplanner.graph.IStationEdge;
 import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
 import com.maciejwozny.nextbikeplanner.station.IStation;
+import com.maciejwozny.nextbikeplanner.station.StationFactory;
 
 import org.jgrapht.Graph;
 import org.junit.Before;
@@ -38,16 +39,21 @@ public class ExampleUnitTest {
 
     @Test
     public void shouldCorrectReadFromFileLikeFromInternet() {
-        ArrayList<IStation> stationList = null;
+        ArrayList<IStation> stationList = new StationFactory(activity).createStationList();
 
-        GraphBuilder builder = new GraphBuilder();
+        GraphBuilder builder = new GraphBuilder(activity);
         Graph<IStationVertex, IStationEdge> graph
-                = builder.build(stationList, activity);
+                = builder.buildGraph(stationList);
 
-//        builder.saveGraph(graph);
+        builder.saveGraphEdges(graph);
 
-        Graph<IStationVertex, IStationEdge> expectedGraph = builder.readGraph(activity);
+        System.err.println("saved !");
 
-        assertEquals(expectedGraph, graph);
+        try {
+            Thread.sleep(1000 * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
+
 }

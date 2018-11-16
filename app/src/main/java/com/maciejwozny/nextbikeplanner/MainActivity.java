@@ -38,83 +38,84 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        StationDownloader stationDownloader
-                = new StationDownloader(null, new DataDownloader());
-        stationList = new StationParser().parse(stationDownloader.createJsonWithStationList());
-        if (stationList == null) {
-            Toast.makeText(this, "No internet connection !", Toast.LENGTH_LONG).show();
-            return;
-        }
-        List<String> stationStrings = new ArrayList<>();
-
-        for(IStation station : stationList) {
-            stationStrings.add(station.getName());
-//            Log.d(TAG, "'" + station.getName() + "'");
-        }
-
-        AutoCompleteTextView start = findViewById(R.id.autoCompleteStart);
-        AutoCompleteTextView end = findViewById(R.id.autoCompleteEnd);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, stationStrings);
-        start.setAdapter(adapter);
-        end.setAdapter(adapter);
-
-        Button calculate = findViewById(R.id.calculateButton);
-        calculate.setOnClickListener((View view) -> {
-            Graph<IStationVertex, IStationEdge> graph = new GraphBuilder().build(stationList, this);
-
-            Log.d(TAG, graph.toString());
-            Log.d(TAG, "number of vertex: " + graph.vertexSet().size());
-            Log.d(TAG, "number of edges: " + graph.edgeSet().size());
-            IStationVertex destination = null, source = null;
-            for (IStationVertex vertex : graph.vertexSet()) {
-                if (start.getText().toString().equals(vertex.getName())) {
-                    source = vertex;
-                }
-                if (end.getText().toString().equals(vertex.getName())) {
-                    destination = vertex;
-                }
-            }
-
-            if (source == null) {
-                Toast.makeText(this, "select correct start !", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            if (destination == null) {
-                Toast.makeText(this, "select correct end !", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            GraphPath<IStationVertex, IStationEdge> path
-                    = DijkstraShortestPath.findPathBetween(graph, source, destination);
-            List<IStationEdge> stationEdges = path.getEdgeList();
-
-            String pathString = "";
-            for (IStationEdge edge: stationEdges) {
-                pathString += edge.getDestination().getName() + " -> " + edge.getSource().getName()
-                        + " = " + edge.getRoad().mLength + " meters\n";
-            }
-            Log.d(TAG, pathString);
-            TextView text = MainActivity.this.findViewById(R.id.outputText);
-            text.setText(pathString);
-        });
-
-
-        Button map = findViewById(R.id.mapButton);
-        map.setOnClickListener(view -> {
-            Intent intent = new Intent(this, MapActivity.class);
-            intent.putExtra(EXTRA_STATION_LIST, stationList);
-            startActivity(intent);
-        });
-
-        Button setting = findViewById(R.id.settingButton);
-        setting.setOnClickListener(view -> {
-            startActivity(new Intent(this, SettingsActivity.class));
-        });
+//        Toolbar toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//
+//        StationDownloader stationDownloader
+//                = new StationDownloader(null, new DataDownloader());
+//        stationList = new StationParser().parse(stationDownloader.createJsonWithStationList());
+//        if (stationList == null) {
+//            Toast.makeText(this, "No internet connection !", Toast.LENGTH_LONG).show();
+//            return;
+//        }
+//        List<String> stationStrings = new ArrayList<>();
+//
+//        for(IStation station : stationList) {
+//            stationStrings.add(station.getName());
+////            Log.d(TAG, "'" + station.getName() + "'");
+//        }
+//
+//        AutoCompleteTextView start = findViewById(R.id.autoCompleteStart);
+//        AutoCompleteTextView end = findViewById(R.id.autoCompleteEnd);
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+//                android.R.layout.simple_dropdown_item_1line, stationStrings);
+//        start.setAdapter(adapter);
+//        end.setAdapter(adapter);
+//
+//        Button calculate = findViewById(R.id.calculateButton);
+//        calculate.setOnClickListener((View view) -> {
+//            Graph<IStationVertex, IStationEdge> graph =
+//                    new GraphBuilder(this).buildGraph(stationList);
+//
+//            Log.d(TAG, graph.toString());
+//            Log.d(TAG, "number of vertex: " + graph.vertexSet().size());
+//            Log.d(TAG, "number of edges: " + graph.edgeSet().size());
+//            IStationVertex destination = null, source = null;
+//            for (IStationVertex vertex : graph.vertexSet()) {
+//                if (start.getText().toString().equals(vertex.getName())) {
+//                    source = vertex;
+//                }
+//                if (end.getText().toString().equals(vertex.getName())) {
+//                    destination = vertex;
+//                }
+//            }
+//
+//            if (source == null) {
+//                Toast.makeText(this, "select correct start !", Toast.LENGTH_LONG).show();
+//                return;
+//            }
+//
+//            if (destination == null) {
+//                Toast.makeText(this, "select correct end !", Toast.LENGTH_LONG).show();
+//                return;
+//            }
+//
+//            GraphPath<IStationVertex, IStationEdge> path
+//                    = DijkstraShortestPath.findPathBetween(graph, source, destination);
+//            List<IStationEdge> stationEdges = path.getEdgeList();
+//
+//            String pathString = "";
+//            for (IStationEdge edge: stationEdges) {
+//                pathString += edge.getDestination().getName() + " -> " + edge.getSource().getName()
+//                        + " = " + edge.getRoad().mLength + " meters\n";
+//            }
+//            Log.d(TAG, pathString);
+//            TextView text = MainActivity.this.findViewById(R.id.outputText);
+//            text.setText(pathString);
+//        });
+//
+//
+//        Button map = findViewById(R.id.mapButton);
+//        map.setOnClickListener(view -> {
+//            Intent intent = new Intent(this, MapActivity.class);
+//            intent.putExtra(EXTRA_STATION_LIST, stationList);
+//            startActivity(intent);
+//        });
+//
+//        Button setting = findViewById(R.id.settingButton);
+//        setting.setOnClickListener(view -> {
+//            startActivity(new Intent(this, SettingsActivity.class));
+//        });
     }
 
     @Override

@@ -108,7 +108,7 @@ public class MapManager {
         mapView.getOverlays().add(roadOverlay);
         mapView.invalidate();
 
-        Log.d(TAG, "road length = " + road.mLength);
+        Log.d(TAG, "road length = " + road.mLength + "[km]");
         Log.d(TAG, "road duration = " + road.mDuration / 60 + "[min]");
     }
 }

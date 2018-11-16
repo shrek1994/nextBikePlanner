@@ -30,18 +30,26 @@ public class CalculatePathListener implements View.OnClickListener {
     private String start = null;
     private String end = null;
     private Graph<IStationVertex, IStationEdge> graph;
+    private Thread createGraph = new Thread(
+            () -> graph = new GraphBuilder(activity).buildGraph(stationList));
 
     public CalculatePathListener(Activity activity, List<IStation> stationList, MapManager mapManager) {
         this.activity = activity;
         this.stationList = stationList;
         this.mapManager = mapManager;
         this.roadDownloader = new RoadDownloader(activity);
+        createGraph.start();
     }
 
     @Override
     public void onClick(View view) {
         if (graph == null) {
-            graph = new GraphBuilder().build(stationList, activity);
+            Log.d(TAG, "graph is null - still building...");
+            try {
+                createGraph.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         Log.d(TAG, "number of vertex: " + graph.vertexSet().size());
@@ -87,7 +95,7 @@ public class CalculatePathListener implements View.OnClickListener {
         String pathString = "";
         for (IStationEdge edge: stationEdges) {
             pathString += edge.getDestination().getName() + " -> " + edge.getSource().getName()
-                    + " = " + edge.getRoad().mDuration + " time\n";
+                    + " = " + edge.getRoad().mDuration / 60 + " min\n";
         }
 
         List<IStationVertex> vertexList = path.getVertexList();
