@@ -103,8 +103,10 @@ public class CalculatePathListener implements View.OnClickListener {
 
         String pathString = "";
         for (IStationEdge edge: stationEdges) {
+            int minutes = (int) edge.getRoad().mDuration / 60;
+            int seconds = (int) edge.getRoad().mDuration % 60;
             pathString += edge.getDestination().getName() + " -> " + edge.getSource().getName()
-                    + " = " + edge.getRoad().mDuration / 60 + " min\n";
+                    + " = " + minutes + "min " + seconds + "s\n";
         }
 
         List<IStationVertex> vertexList = path.getVertexList();

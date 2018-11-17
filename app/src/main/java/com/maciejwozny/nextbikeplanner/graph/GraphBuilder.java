@@ -44,7 +44,8 @@ public class GraphBuilder implements IGraphBuilder {
 //                Log.v(TAG, stationVertex.getName() + " - " + vertex.getName()
 //                        + " = " + edge.getRoad().mDuration);
                 graph.addEdge(stationVertex, vertex, edge);
-                double duration = edge.getRoad().mDuration;
+                //adding 15 second for give back bike
+                double duration = edge.getRoad().mDuration + 15;
                 graph.setEdgeWeight(edge, duration);
             }
         }
