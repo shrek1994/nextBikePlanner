@@ -27,7 +27,7 @@ public class EdgeFactory {
     /*
      * Creating edge if road duration is lower than 20 minutes
      */
-    public IStationEdge create(StationVertex source, StationVertex destination) {
+    public StationEdge create(StationVertex source, StationVertex destination) {
         double distance = source.getGeoPoint().distanceToAsDouble(destination.getGeoPoint());
         if (distance > 4000) {
             return null;

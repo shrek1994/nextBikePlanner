@@ -6,7 +6,7 @@ import com.maciejwozny.nextbikeplanner.net.DataDownloader;
 
 import java.util.ArrayList;
 
-public class StationFactory implements IStationFactory {
+public class StationFactory  {
     private StationParser parser;
     private IStationsBuilder firstBuilder;
 
@@ -17,8 +17,7 @@ public class StationFactory implements IStationFactory {
         firstBuilder = new StationReader(downloader, context);
     }
 
-    @Override
-    public ArrayList<IStation> createStationList() {
+    public ArrayList<Station> createStationList() {
         String jsonText = firstBuilder.createJsonWithStationList();
         return parser.parse(jsonText);
     }

@@ -5,7 +5,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.maciejwozny.nextbikeplanner.station.IStation;
+import com.maciejwozny.nextbikeplanner.station.Station;
 
 import org.jgrapht.Graph;
 import org.jgrapht.graph.SimpleWeightedGraph;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class GraphBuilder implements IGraphBuilder {
+public class GraphBuilder {
     private static final String TAG = "GraphBuilder";
     private EdgeFactory factory;
 
@@ -25,19 +25,18 @@ public class GraphBuilder implements IGraphBuilder {
         factory = new EdgeFactory(context, edgeReader);
     }
 
-    @Override
-    public Graph<IStationVertex, IStationEdge> buildGraph(List<IStation> stationList) {
+    public Graph<StationVertex, StationEdge> buildGraph(List<Station> stationList) {
         Log.d(TAG, "Started building graph...");
-        Graph<IStationVertex, IStationEdge> graph = new SimpleWeightedGraph<>(IStationEdge.class);
-        for (IStation station: stationList) {
-            Set<IStationVertex> vertexSet = graph.vertexSet();
+        Graph<StationVertex, StationEdge> graph = new SimpleWeightedGraph<>(StationEdge.class);
+        for (Station station: stationList) {
+            Set<StationVertex> vertexSet = graph.vertexSet();
             StationVertex stationVertex = new StationVertex(station);
             graph.addVertex(stationVertex);
-            for (IStationVertex vertex: vertexSet) {
+            for (StationVertex vertex: vertexSet) {
                 if (stationVertex.equals(vertex)) {
                     continue;
                 }
-                IStationEdge edge = factory.create(stationVertex, (StationVertex)vertex);
+                StationEdge edge = factory.create(stationVertex, vertex);
                 if (edge == null) {
                     continue;
                 }
@@ -52,11 +51,11 @@ public class GraphBuilder implements IGraphBuilder {
         return graph;
     }
 
-    public String saveGraphEdges(Graph<IStationVertex, IStationEdge> graph) {
+    public String saveGraphEdges(Graph<StationVertex, StationEdge> graph) {
         Log.d(TAG, "saveGraphEdges()");
         Gson gson = new Gson();
-        List<IStationEdge> edgeArrayList = new ArrayList<>(graph.edgeSet());
-//        List<IStationVertex> vertexArrayList = new ArrayList<>(graph.vertexSet());
+        List<StationEdge> edgeArrayList = new ArrayList<>(graph.edgeSet());
+//        List<StationVertex> vertexArrayList = new ArrayList<>(graph.vertexSet());
 //        Log.d(TAG, "vertexArrayList.size = " + vertexArrayList.size());
         Log.d(TAG, "edgeArrayList.size = " + edgeArrayList.size());
 

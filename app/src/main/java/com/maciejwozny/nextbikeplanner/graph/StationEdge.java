@@ -5,7 +5,7 @@ import org.osmdroid.bonuspack.routing.Road;
 import java.io.Serializable;
 import java.util.Objects;
 
-class StationEdge implements IStationEdge, Serializable {
+public class StationEdge implements Serializable {
     private static final String TAG = "StationEdge";
     private StationVertex source;
     private StationVertex destination;
@@ -17,17 +17,14 @@ class StationEdge implements IStationEdge, Serializable {
         this.road = road;
     }
 
-    @Override
-    public IStationVertex getSource() {
+    public StationVertex getSource() {
         return source;
     }
 
-    @Override
-    public IStationVertex getDestination() {
+    public StationVertex getDestination() {
         return destination;
     }
 
-    @Override
     public Road getRoad() {
         return road;
     }

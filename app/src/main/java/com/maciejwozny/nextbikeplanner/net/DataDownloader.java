@@ -21,15 +21,15 @@ public class DataDownloader extends AsyncTask<String, Void, String> {
             InputStream stream = connection.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
-            StringBuffer buffer = new StringBuffer();
+            StringBuilder builder = new StringBuilder();
             String line;
 
             while ((line = reader.readLine()) != null) {
-                buffer.append(line+"\n");
+                builder.append(line).append("\n");
             }
 
-            Log.d(TAG, "Downloaded! " + buffer.substring(0, 100) + "...");
-            return buffer.toString();
+            Log.d(TAG, "Downloaded! " + builder.substring(0, 100) + "...");
+            return builder.toString();
         } catch (IOException e) {
             Log.e(TAG, "IOError: '" + e.toString() + "'");
             e.printStackTrace();

@@ -1,22 +1,19 @@
 package com.maciejwozny.nextbikeplanner;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.preference.PreferenceManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import com.maciejwozny.nextbikeplanner.station.IStationFactory;
+import com.maciejwozny.nextbikeplanner.station.Station;
 import com.maciejwozny.nextbikeplanner.station.StationFactory;
-import com.maciejwozny.nextbikeplanner.station.IStation;
 
 import org.osmdroid.views.MapView;
 
@@ -61,7 +58,7 @@ public class MapActivity extends AppCompatActivity {
     private CalculatePathListener pathListener = null;
     private MapManager mapManager = null;
     private ChooseStationDialog stationDialog = null;
-    private IStationFactory stationFactory = null;
+    private StationFactory stationFactory = null;
     private ProgressBar progressBar = null;
 
     @Override
@@ -69,7 +66,7 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         stationFactory = new StationFactory(this);
 
-        ArrayList<IStation> stationList = stationFactory.createStationList();
+        ArrayList<Station> stationList = stationFactory.createStationList();
 
 //        Context ctx = getApplicationContext();
 //        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));

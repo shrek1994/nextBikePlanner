@@ -9,10 +9,10 @@ import android.widget.Toast;
 
 import com.maciejwozny.nextbikeplanner.graph.EdgeReader;
 import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
-import com.maciejwozny.nextbikeplanner.graph.IStationEdge;
-import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
-import com.maciejwozny.nextbikeplanner.station.IStation;
+import com.maciejwozny.nextbikeplanner.graph.StationEdge;
+import com.maciejwozny.nextbikeplanner.graph.StationVertex;
 import com.maciejwozny.nextbikeplanner.net.RoadDownloader;
+import com.maciejwozny.nextbikeplanner.station.Station;
 
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
@@ -27,20 +27,20 @@ import java.util.concurrent.ExecutionException;
 public class CalculatePathListener implements View.OnClickListener {
     private static final String TAG = "CalculatePathListener";
     private Activity activity;
-    private List<IStation> stationList;
+    private List<Station> stationList;
     private MapManager mapManager;
     private RoadDownloader roadDownloader;
     private EdgeReader edgeReader;
     private String start = null;
     private String end = null;
     private ProgressBar progressBar;
-    private Graph<IStationVertex, IStationEdge> graph;
+    private Graph<StationVertex, StationEdge> graph;
     private Thread createGraph = new Thread(() -> {
                 graph = new GraphBuilder(activity, edgeReader).buildGraph(stationList);
                 activity.runOnUiThread(() -> progressBar.setVisibility(View.GONE));
             });
 
-    public CalculatePathListener(Activity activity, List<IStation> stationList,
+    public CalculatePathListener(Activity activity, List<Station> stationList,
                                  MapManager mapManager, ProgressBar progressBar) {
         this.activity = activity;
         this.stationList = stationList;
@@ -65,7 +65,7 @@ public class CalculatePathListener implements View.OnClickListener {
         Log.d(TAG, "number of vertex: " + graph.vertexSet().size());
         Log.d(TAG, "number of edges: " + graph.edgeSet().size());
 
-        IStationVertex destination = null, source = null;
+        StationVertex destination = null, source = null;
 
         if (start == null) {
             Toast.makeText(activity, "Select start !", Toast.LENGTH_LONG).show();
@@ -77,7 +77,7 @@ public class CalculatePathListener implements View.OnClickListener {
             return;
         }
 
-        for (IStationVertex vertex : graph.vertexSet()) {
+        for (StationVertex vertex : graph.vertexSet()) {
             if (start.equals(vertex.getName())) {
                 source = vertex;
             }
@@ -98,24 +98,24 @@ public class CalculatePathListener implements View.OnClickListener {
             return;
         }
 
-        GraphPath<IStationVertex, IStationEdge> path
+        GraphPath<StationVertex, StationEdge> path
                 = DijkstraShortestPath.findPathBetween(graph, source, destination);
-        List<IStationEdge> stationEdges = path.getEdgeList();
+        List<StationEdge> StationEdges = path.getEdgeList();
 
-        String pathString = getPathText(stationEdges, source);
+        String pathString = getPathText(StationEdges, source);
 
-        List<IStationVertex> vertexList = path.getVertexList();
+        List<StationVertex> vertexList = path.getVertexList();
         Toast.makeText(activity, pathString, Toast.LENGTH_LONG).show();
 
         mapManager.clearMap();
         mapManager.addBikeStations(vertexList);
 
         ArrayList<GeoPoint> geoPoints = new ArrayList<>();
-        for (IStationVertex vertex: vertexList) {
+        for (StationVertex vertex: vertexList) {
             geoPoints.add(vertex.getGeoPoint());
         }
 
-        for (IStationEdge edge: stationEdges) {
+        for (StationEdge edge: StationEdges) {
             Road road = edgeReader.getRoad(edge.getSource(), edge.getDestination());
             try {
                 if (road == null) {
@@ -130,10 +130,10 @@ public class CalculatePathListener implements View.OnClickListener {
     }
 
     @NonNull
-    private String getPathText(List<IStationEdge> stationEdges, IStationVertex startVertex) {
-        IStationVertex previousVertex = startVertex;
+    private String getPathText(List<StationEdge> StationEdges, StationVertex startVertex) {
+        StationVertex previousVertex = startVertex;
         String pathString = "";
-        for (IStationEdge edge: stationEdges) {
+        for (StationEdge edge: StationEdges) {
             int minutes = (int) edge.getRoad().mDuration / 60;
             int seconds = (int) edge.getRoad().mDuration % 60;
             pathString += previousVertex.getName() + " -> ";

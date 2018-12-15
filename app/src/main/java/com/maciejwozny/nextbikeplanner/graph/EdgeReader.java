@@ -17,17 +17,17 @@ import java.util.List;
 public class EdgeReader {
     private static final String TAG = "EdgeReader";
     private Context context;
-    private List<IStationEdge> cachedStationEdges = null;
+    private List<StationEdge> cachedStationEdges = null;
 
     public EdgeReader(Context context) {
         this.context = context;
     }
 
-    public Road getRoad(IStationVertex source, IStationVertex destination) {
+    public Road getRoad(StationVertex source, StationVertex destination) {
         readGraphEdges();
 
         Road road = null;
-        for (IStationEdge edge: cachedStationEdges) {
+        for (StationEdge edge: cachedStationEdges) {
             if (edge.getSource().equals(source) && edge.getDestination().equals(destination)) {
                 Log.d(TAG, "found road in file: " + edge.toString());
                 road = edge.getRoad();
@@ -42,7 +42,7 @@ public class EdgeReader {
         return road;
     }
 
-    private List<IStationEdge> readGraphEdges() {
+    private List<StationEdge> readGraphEdges() {
         if (cachedStationEdges != null) {
             Log.d(TAG, "readGraphEdges(): return from cached");
             return cachedStationEdges;

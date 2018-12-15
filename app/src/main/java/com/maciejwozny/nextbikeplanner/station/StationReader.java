@@ -9,8 +9,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
 public class StationReader extends IStationsBuilder {
     private final static String TAG = "StationReader";
@@ -23,7 +21,7 @@ public class StationReader extends IStationsBuilder {
 
     @Override
     String getStation() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
         try {
             InputStream stream = context.getResources().openRawResource(R.raw.nextbike_wroclaw);
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -31,15 +29,15 @@ public class StationReader extends IStationsBuilder {
             String line;
 
             while ((line = reader.readLine()) != null) {
-                buffer.append(line+"\n");
+                builder.append(line).append("\n");
             }
 
-            Log.d(TAG, "Read! " + buffer.substring(0, 100) + "...");
+            Log.d(TAG, "Read! " + builder.substring(0, 100) + "...");
         } catch (IOException e) {
             Log.e(TAG, "IOError: '" + e.toString() + "'");
             e.printStackTrace();
         }
 
-        return buffer.toString();
+        return builder.toString();
     }
 }

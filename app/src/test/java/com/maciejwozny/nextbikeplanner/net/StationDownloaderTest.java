@@ -12,7 +12,7 @@ public class StationDownloaderTest {
     private StationDownloader sut;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
 //        sut = new StationDownloader(dataDownloader);
 //        when(dataDownloader.downloadFile()).thenReturn(JSON);
     }

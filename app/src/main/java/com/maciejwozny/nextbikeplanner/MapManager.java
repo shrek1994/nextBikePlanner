@@ -4,8 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 
-import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
-import com.maciejwozny.nextbikeplanner.station.IStation;
+import com.maciejwozny.nextbikeplanner.graph.StationVertex;
+import com.maciejwozny.nextbikeplanner.station.Station;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.Road;
@@ -27,10 +27,10 @@ public class MapManager {
     private Context context;
     private MapView mapView;
     private ChooseStationDialog stationDialog;
-    private ArrayList<IStation> stationList;
+    private ArrayList<Station> stationList;
 
     public MapManager(Context context, MapView mapView,
-                      ArrayList<IStation> stationList) {
+                      ArrayList<Station> stationList) {
         this.context = context;
         this.mapView = mapView;
         this.stationList = stationList;
@@ -54,36 +54,36 @@ public class MapManager {
 
     public void initBikeStations() {
         ArrayList<OverlayItem> items = new ArrayList<>();
-        for (IStation station : stationList) {
+        for (Station station : stationList) {
             items.add(new OverlayItem(station.getName(), "", //"bikes: " + station.getBikeNumber(),
                     new GeoPoint(station.getLatitude(), station.getLongitude())));
         }
 
-        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,
-            new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-                @Override
-                public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                    return true;
-                }
+        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<>(items,
+                new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+                    @Override
+                    public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                        return true;
+                    }
 
-                @Override
-                public boolean onItemLongPress(final int index, final OverlayItem item) {
-                    stationDialog.show(context, item.getTitle());
-                    return false;
-                }
-            }, context);
+                    @Override
+                    public boolean onItemLongPress(final int index, final OverlayItem item) {
+                        stationDialog.show(context, item.getTitle());
+                        return false;
+                    }
+                }, context);
         mOverlay.setFocusItemsOnTap(true);
 
         mapView.getOverlays().add(mOverlay);
     }
 
-    public void addBikeStations(List<IStationVertex> vertexList) {
+    public void addBikeStations(List<StationVertex> vertexList) {
         ArrayList<OverlayItem> overlayItemList = new ArrayList<>();
-        for (IStationVertex vertex: vertexList) {
+        for (StationVertex vertex: vertexList) {
             overlayItemList.add(new OverlayItem(vertex.getName(), "" ,vertex.getGeoPoint()));
         }
 
-        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<OverlayItem>(overlayItemList,
+        ItemizedOverlayWithFocus<OverlayItem> mOverlay = new ItemizedOverlayWithFocus<>(overlayItemList,
                 new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                     @Override
                     public boolean onItemSingleTapUp(final int index, final OverlayItem item) {

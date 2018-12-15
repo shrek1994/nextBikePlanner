@@ -2,9 +2,9 @@ package com.maciejwozny.nextbikeplanner;
 
 import com.maciejwozny.nextbikeplanner.graph.EdgeReader;
 import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
-import com.maciejwozny.nextbikeplanner.graph.IStationEdge;
-import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
-import com.maciejwozny.nextbikeplanner.station.IStation;
+import com.maciejwozny.nextbikeplanner.graph.StationEdge;
+import com.maciejwozny.nextbikeplanner.graph.StationVertex;
+import com.maciejwozny.nextbikeplanner.station.Station;
 import com.maciejwozny.nextbikeplanner.station.StationFactory;
 
 import org.jgrapht.Graph;
@@ -40,10 +40,10 @@ public class ExampleUnitTest {
 
     @Test
     public void shouldCorrectReadFromFileLikeFromInternet() {
-        ArrayList<IStation> stationList = new StationFactory(activity).createStationList();
+        ArrayList<Station> stationList = new StationFactory(activity).createStationList();
 
         GraphBuilder builder = new GraphBuilder(activity, new EdgeReader(activity));
-        Graph<IStationVertex, IStationEdge> graph
+        Graph<StationVertex, StationEdge> graph
                 = builder.buildGraph(stationList);
 
         builder.saveGraphEdges(graph);
@@ -51,7 +51,7 @@ public class ExampleUnitTest {
         System.err.println("saved !");
 
         try {
-            Thread.sleep(1000 * 1000);
+            Thread.sleep(1000 * 100);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

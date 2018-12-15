@@ -1,26 +1,24 @@
 package com.maciejwozny.nextbikeplanner.graph;
 
-import com.maciejwozny.nextbikeplanner.station.IStation;
+import com.maciejwozny.nextbikeplanner.station.Station;
 
 import org.osmdroid.util.GeoPoint;
 
 import java.util.Objects;
 
-class StationVertex implements IStationVertex {
+public class StationVertex {
     private String name;
     private GeoPoint geoPoint;
 
-    public StationVertex(IStation station) {
+    public StationVertex(Station station) {
         this.name = station.getName();
         this.geoPoint = new GeoPoint(station.getLatitude(), station.getLongitude());
     }
 
-    @Override
     public String getName() {
         return name;
     }
 
-    @Override
     public GeoPoint getGeoPoint() {
         return geoPoint;
     }
