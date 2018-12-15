@@ -1,6 +1,7 @@
 package com.maciejwozny.nextbikeplanner;
 
 import android.app.Activity;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -101,13 +102,7 @@ public class CalculatePathListener implements View.OnClickListener {
                 = DijkstraShortestPath.findPathBetween(graph, source, destination);
         List<IStationEdge> stationEdges = path.getEdgeList();
 
-        String pathString = "";
-        for (IStationEdge edge: stationEdges) {
-            int minutes = (int) edge.getRoad().mDuration / 60;
-            int seconds = (int) edge.getRoad().mDuration % 60;
-            pathString += edge.getDestination().getName() + " -> " + edge.getSource().getName()
-                    + " = " + minutes + "min " + seconds + "s\n";
-        }
+        String pathString = getPathText(stationEdges, source);
 
         List<IStationVertex> vertexList = path.getVertexList();
         Toast.makeText(activity, pathString, Toast.LENGTH_LONG).show();
@@ -132,6 +127,26 @@ public class CalculatePathListener implements View.OnClickListener {
                 e.printStackTrace();
             }
         }
+    }
+
+    @NonNull
+    private String getPathText(List<IStationEdge> stationEdges, IStationVertex startVertex) {
+        IStationVertex previousVertex = startVertex;
+        String pathString = "";
+        for (IStationEdge edge: stationEdges) {
+            int minutes = (int) edge.getRoad().mDuration / 60;
+            int seconds = (int) edge.getRoad().mDuration % 60;
+            pathString += previousVertex.getName() + " -> ";
+            if (previousVertex.equals(edge.getDestination())) {
+                pathString += edge.getSource().getName();
+                previousVertex = edge.getSource();
+            } else {
+                pathString += edge.getDestination().getName();
+                previousVertex = edge.getDestination();
+            }
+            pathString += " = " + minutes + "min " + seconds + "s\n";
+        }
+        return pathString;
     }
 
     public void setStart(String start) {

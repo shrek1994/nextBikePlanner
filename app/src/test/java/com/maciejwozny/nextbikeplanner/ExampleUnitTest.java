@@ -1,5 +1,6 @@
 package com.maciejwozny.nextbikeplanner;
 
+import com.maciejwozny.nextbikeplanner.graph.EdgeReader;
 import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
 import com.maciejwozny.nextbikeplanner.graph.IStationEdge;
 import com.maciejwozny.nextbikeplanner.graph.IStationVertex;
@@ -22,12 +23,12 @@ import static org.junit.Assert.assertEquals;
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class)
 public class ExampleUnitTest {
-    private MainActivity activity;
+    private DEPRECATED_MainActivity activity;
 
     @Before
     public void setUp() {
         ShadowLog.stream = System.out;
-        activity = Robolectric.buildActivity(MainActivity.class)
+        activity = Robolectric.buildActivity(DEPRECATED_MainActivity.class)
                 .create()
                 .resume()
                 .get();
@@ -41,7 +42,7 @@ public class ExampleUnitTest {
     public void shouldCorrectReadFromFileLikeFromInternet() {
         ArrayList<IStation> stationList = new StationFactory(activity).createStationList();
 
-        GraphBuilder builder = new GraphBuilder(activity);
+        GraphBuilder builder = new GraphBuilder(activity, new EdgeReader(activity));
         Graph<IStationVertex, IStationEdge> graph
                 = builder.buildGraph(stationList);
 
