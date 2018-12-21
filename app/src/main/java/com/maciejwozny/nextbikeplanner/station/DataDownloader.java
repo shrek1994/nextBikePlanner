@@ -1,4 +1,4 @@
-package com.maciejwozny.nextbikeplanner.net;
+package com.maciejwozny.nextbikeplanner.station;
 
 import android.os.AsyncTask;
 import android.util.Log;

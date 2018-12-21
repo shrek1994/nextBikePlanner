@@ -14,12 +14,12 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
-public class EdgeReader {
-    private static final String TAG = "EdgeReader";
+public class RoadReader {
+    private static final String TAG = "RoadReader";
     private Context context;
     private List<StationEdge> cachedStationEdges = null;
 
-    public EdgeReader(Context context) {
+    public RoadReader(Context context) {
         this.context = context;
     }
 

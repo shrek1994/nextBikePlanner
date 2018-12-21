@@ -1,5 +1,6 @@
 package com.maciejwozny.nextbikeplanner.net;
 
+import com.maciejwozny.nextbikeplanner.station.DataDownloader;
 import com.maciejwozny.nextbikeplanner.station.StationDownloader;
 
 import org.junit.Before;

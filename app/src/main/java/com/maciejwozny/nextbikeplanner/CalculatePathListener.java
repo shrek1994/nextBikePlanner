@@ -7,11 +7,11 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.maciejwozny.nextbikeplanner.graph.EdgeReader;
+import com.maciejwozny.nextbikeplanner.graph.RoadReader;
 import com.maciejwozny.nextbikeplanner.graph.GraphBuilder;
 import com.maciejwozny.nextbikeplanner.graph.StationEdge;
 import com.maciejwozny.nextbikeplanner.graph.StationVertex;
-import com.maciejwozny.nextbikeplanner.net.RoadDownloader;
+import com.maciejwozny.nextbikeplanner.graph.RoadDownloader;
 import com.maciejwozny.nextbikeplanner.station.Station;
 
 import org.jgrapht.Graph;
@@ -30,13 +30,13 @@ public class CalculatePathListener implements View.OnClickListener {
     private List<Station> stationList;
     private MapManager mapManager;
     private RoadDownloader roadDownloader;
-    private EdgeReader edgeReader;
+    private RoadReader roadReader;
     private String start = null;
     private String end = null;
     private ProgressBar progressBar;
     private Graph<StationVertex, StationEdge> graph;
     private Thread createGraph = new Thread(() -> {
-                graph = new GraphBuilder(activity, edgeReader).buildGraph(stationList);
+                graph = new GraphBuilder(activity, roadReader).buildGraph(stationList);
                 activity.runOnUiThread(() -> progressBar.setVisibility(View.GONE));
             });
 
@@ -46,7 +46,7 @@ public class CalculatePathListener implements View.OnClickListener {
         this.stationList = stationList;
         this.mapManager = mapManager;
         this.roadDownloader = new RoadDownloader(activity);
-        this.edgeReader = new EdgeReader(activity);
+        this.roadReader = new RoadReader(activity);
         this.progressBar = progressBar;
         createGraph.start();
     }
@@ -116,7 +116,7 @@ public class CalculatePathListener implements View.OnClickListener {
         }
 
         for (StationEdge edge: StationEdges) {
-            Road road = edgeReader.getRoad(edge.getSource(), edge.getDestination());
+            Road road = roadReader.getRoad(edge.getSource(), edge.getDestination());
             try {
                 if (road == null) {
                     RoadDownloader roadDownloader = new RoadDownloader(activity);

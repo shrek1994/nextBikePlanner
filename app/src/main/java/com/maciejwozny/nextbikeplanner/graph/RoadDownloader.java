@@ -1,4 +1,4 @@
-package com.maciejwozny.nextbikeplanner.net;
+package com.maciejwozny.nextbikeplanner.graph;
 
 import android.content.Context;
 import android.content.SharedPreferences;

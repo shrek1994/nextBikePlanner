@@ -2,8 +2,6 @@ package com.maciejwozny.nextbikeplanner.station;
 
 import android.util.Log;
 
-import com.maciejwozny.nextbikeplanner.net.DataDownloader;
-
 import java.util.concurrent.ExecutionException;
 
 public class StationDownloader extends IStationsBuilder {

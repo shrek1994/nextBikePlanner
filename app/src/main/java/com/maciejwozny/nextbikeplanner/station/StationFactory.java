@@ -2,8 +2,6 @@ package com.maciejwozny.nextbikeplanner.station;
 
 import android.content.Context;
 
-import com.maciejwozny.nextbikeplanner.net.DataDownloader;
-
 import java.util.ArrayList;
 
 public class StationFactory  {

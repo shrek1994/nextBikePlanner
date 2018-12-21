@@ -21,8 +21,8 @@ public class GraphBuilder {
     private static final String TAG = "GraphBuilder";
     private EdgeFactory factory;
 
-    public GraphBuilder(Context context, EdgeReader edgeReader) {
-        factory = new EdgeFactory(context, edgeReader);
+    public GraphBuilder(Context context, RoadReader roadReader) {
+        factory = new EdgeFactory(context, roadReader);
     }
 
     public Graph<StationVertex, StationEdge> buildGraph(List<Station> stationList) {
@@ -40,8 +40,6 @@ public class GraphBuilder {
                 if (edge == null) {
                     continue;
                 }
-//                Log.v(TAG, stationVertex.getName() + " - " + vertex.getName()
-//                        + " = " + edge.getRoad().mDuration);
                 graph.addEdge(stationVertex, vertex, edge);
                 //adding 15 second for give back bike
                 double duration = edge.getRoad().mDuration + 15;
@@ -55,8 +53,6 @@ public class GraphBuilder {
         Log.d(TAG, "saveGraphEdges()");
         Gson gson = new Gson();
         List<StationEdge> edgeArrayList = new ArrayList<>(graph.edgeSet());
-//        List<StationVertex> vertexArrayList = new ArrayList<>(graph.vertexSet());
-//        Log.d(TAG, "vertexArrayList.size = " + vertexArrayList.size());
         Log.d(TAG, "edgeArrayList.size = " + edgeArrayList.size());
 
         Log.d(TAG, gson.toJson(edgeArrayList).substring(0, 100) + "...");
@@ -66,10 +62,6 @@ public class GraphBuilder {
             if (!docsFolder.exists()) {
                 docsFolder.mkdir();
             }
-//            file = new File(docsFolder.getAbsolutePath(),"vertexes.json");
-//            FileOutputStream vertexStream = new FileOutputStream(file);
-//            vertexStream.write(gson.toJson(vertexArrayList).getBytes());
-//            vertexStream.close();
 
             file = new File(docsFolder.getAbsolutePath(),"edges.json");
             FileOutputStream edgesStream = new FileOutputStream(file);
