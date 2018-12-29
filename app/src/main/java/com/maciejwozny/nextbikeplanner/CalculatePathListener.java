@@ -100,12 +100,12 @@ public class CalculatePathListener implements View.OnClickListener {
 
         GraphPath<StationVertex, StationEdge> path
                 = DijkstraShortestPath.findPathBetween(graph, source, destination);
-        List<StationEdge> StationEdges = path.getEdgeList();
+        List<StationEdge> stationEdges = path.getEdgeList();
 
-        String pathString = getPathText(StationEdges, source);
+        String pathString = getPathText(stationEdges, source);
+        Toast.makeText(activity, pathString, Toast.LENGTH_LONG).show();
 
         List<StationVertex> vertexList = path.getVertexList();
-        Toast.makeText(activity, pathString, Toast.LENGTH_LONG).show();
 
         mapManager.clearMap();
         mapManager.addBikeStations(vertexList);
@@ -115,7 +115,7 @@ public class CalculatePathListener implements View.OnClickListener {
             geoPoints.add(vertex.getGeoPoint());
         }
 
-        for (StationEdge edge: StationEdges) {
+        for (StationEdge edge: stationEdges) {
             Road road = roadReader.getRoad(edge.getSource(), edge.getDestination());
             try {
                 if (road == null) {
